@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module zmq_utils;
+module deimos.zmq.zmq_utils;
 
 extern (C)
 {
