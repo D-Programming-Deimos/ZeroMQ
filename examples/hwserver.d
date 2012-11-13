@@ -3,7 +3,7 @@
 //  Binds REP socket to tcp://*:5555
 //  Expects "Hello" from client, replies with "World"
 //
-import zmq;
+import deimos.zmq.zmq;
 import std.stdio;
 import std.string;
 

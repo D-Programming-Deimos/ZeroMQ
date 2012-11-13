@@ -16,5 +16,5 @@ The two files in examples/ were taken directly from that page.
 
 
 Usage:
-	import zmq;
+	import deimos.zmq.zmq;
 	link your program with zmq, and Zap, Pow! (to quote the site) it works.
