@@ -3,7 +3,7 @@
 //  Connects REQ socket to tcp://localhost:5555
 //  Sends "Hello" to server, expects "World" back
 //
-import zmq;
+import deimos.zmq.zmq;
 import std.string;
 import std.stdio;
 
