@@ -1,0 +1,16 @@
+{
+        "name": "ZeroMQ",
+        "description": "Interface to the C ZeroMQ library",
+        "homepage": "http://github.com/D-Programming-Deimos/ZeroMQ",
+        "authors": [
+                "itiu",
+                "Jude \"1100110\" Young"
+        ],
+        "license": "LGPL v3",
+        "sourcePaths": [
+                "deimos"
+        ],
+        "libs": [
+                "zmq"
+        ]
+}
