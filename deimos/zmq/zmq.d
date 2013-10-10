@@ -54,7 +54,7 @@ void zmq_version(int* major, int* minor, int* patch);
 
 /*  A number random anough not to collide with different errno ranges on      */
 /*  different OSes. The assumption is that error_t is at least 32-bit type.   */
-immutable enum
+enum
 {
     ZMQ_HAUSNUMERO = 156384712,
 
@@ -149,7 +149,7 @@ int zmq_msg_set(zmq_msg_t* msg, int option, int optval);
 /******************************************************************************/
 
 /*  Socket types.                                                             */
-immutable enum
+enum
 {
     ZMQ_PAIR        = 0,
     ZMQ_PUB         = 1,
@@ -172,7 +172,7 @@ enum
 }
 
 /*  Socket options.                                                           */
-immutable enum
+enum
 {
     ZMQ_AFFINITY        = 4,
     ZMQ_IDENTITY        = 5,
@@ -213,7 +213,7 @@ immutable enum
 enum ZMQ_MORE = 1;
 
 /*  Send/recv options.                                                        */
-immutable enum
+enum
 {
     ZMQ_DONTWAIT = 1,
     ZMQ_SNDMORE = 2
@@ -338,14 +338,14 @@ int zmq_recviov(void* s, iovec* iov, size_t* count, int flags);
 /*  I/O multiplexing.                                                         */
 /******************************************************************************/
 
-immutable enum
+enum
 {
     ZMQ_POLLIN  = 1,
     ZMQ_POLLOUT = 2,
     ZMQ_POLLERR = 4
 }
 
-__gshared struct zmq_pollitem_t
+struct zmq_pollitem_t
 {
     void* socket;
     version (win32)
@@ -367,7 +367,7 @@ int zmq_poll(zmq_pollitem_t* items, int nitems, long timeout);
 int zmq_proxy(void* frontend, void* backend, void* capture);
 
 /*  Deprecated aliases */
-immutable enum
+enum
 {
     ZMQ_STREAMER     = 1,
     ZMQ_FORWARDER    = 2,
