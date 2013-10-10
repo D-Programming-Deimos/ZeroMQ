@@ -35,6 +35,14 @@ enum
     ZMQ_VERSION_PATCH   =10
 }
 
+int ZMQ_MAKE_VERSION(int major, int minor, int patch)
+{
+    return major * 10000 + minor * 100 + patch;
+}
+
+enum ZMQ_VERSION =
+    ZMQ_MAKE_VERSION(ZMQ_VERSION_MAJOR, ZMQ_VERSION_MINOR, ZMQ_VERSION_PATCH);
+
 /*  Run-time API version detection                                            */
 void zmq_version(int* major, int* minor, int* patch);
 
