@@ -92,7 +92,7 @@ enum
 int zmq_errno();
 
 /*  Resolves system errors and 0MQ errors to human-readable string.           */
-char* zmq_strerror(int errnum);
+const char* zmq_strerror(int errnum);
 
 /******************************************************************************/
 /*  0MQ infrastructure (a.k.a. context) initialisation & termination.         */
@@ -315,10 +315,10 @@ struct zmq_event_t {
 
 void* zmq_socket(void*, int type);
 int zmq_close(void* s);
-int zmq_setsockopt(void* s, int option, void* optval, size_t optvallen);
+int zmq_setsockopt(void* s, int option, const void* optval, size_t optvallen);
 int zmq_getsockopt(void* s, int option, void* optval, size_t *optvallen);
 int zmq_bind(void* s, const char* addr);
-int zmq_connect(void* s, immutable char* addr);
+int zmq_connect(void* s, const char* addr);
 int zmq_unbind(void* s, const char* addr);
 int zmq_disconnect(void* s, const char* addr);
 int zmq_send(void* s, const void* buf, size_t len, int flags);
