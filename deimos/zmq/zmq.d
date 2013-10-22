@@ -20,6 +20,7 @@
 */
 module deimos.zmq.zmq;
 
+import core.stdc.config;
 
 extern (C)
 {
@@ -360,7 +361,7 @@ struct zmq_pollitem_t
     short revents;
 }
 
-int zmq_poll(zmq_pollitem_t* items, int nitems, long timeout);
+int zmq_poll(zmq_pollitem_t* items, int nitems, c_long timeout);
 
 /*  Built-in message proxy (3-way) */
 
