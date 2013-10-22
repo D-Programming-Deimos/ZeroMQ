@@ -20,6 +20,8 @@
 
 module deimos.zmq.utils;
 
+import core.stdc.config;
+
 extern (C)
 {
 
@@ -50,7 +52,7 @@ void* zmq_stopwatch_start();
 
 /*  Stops the stopwatch. Returns the number of microseconds elapsed since     */
 /*  the stopwatch was started.                                                */
-ulong zmq_stopwatch_stop(void* watch_);
+c_ulong zmq_stopwatch_stop(void* watch_);
 
 /*  Sleeps for specified number of seconds.                                   */
 void zmq_sleep(int seconds_);
