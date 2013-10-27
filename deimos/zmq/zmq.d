@@ -22,7 +22,7 @@ module deimos.zmq.zmq;
 
 import core.stdc.config;
 
-extern (C)
+nothrow extern (C)
 {
 
 /******************************************************************************/
@@ -132,8 +132,8 @@ struct zmq_msg_t { ubyte[32] _; }
 
 int zmq_msg_init(zmq_msg_t* msg);
 int zmq_msg_init_size(zmq_msg_t* msg, size_t size);
-int zmq_msg_init_data(zmq_msg_t* msg, void* data,
-    size_t size, void function(void* data, void* hint), void* hint);
+int zmq_msg_init_data(zmq_msg_t* msg, void* data, size_t size,
+    void function(void* data, void* hint) nothrow ffn, void* hint);
 int zmq_msg_send(zmq_msg_t* msg, void* s, int flags);
 int zmq_msg_recv(zmq_msg_t* msg, void* s, int flags);
 int zmq_msg_close(zmq_msg_t* msg);

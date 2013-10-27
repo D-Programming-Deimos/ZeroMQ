@@ -22,7 +22,7 @@ module deimos.zmq.utils;
 
 import core.stdc.config;
 
-extern (C)
+nothrow extern (C)
 {
 
 /*Handle DSO symbol visibility  */
