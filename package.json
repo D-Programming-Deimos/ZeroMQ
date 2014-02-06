@@ -1,5 +1,5 @@
 {
-        "name": "ZeroMQ",
+        "name": "zeromq",
         "description": "Interface to the C ZeroMQ library",
         "homepage": "http://github.com/D-Programming-Deimos/ZeroMQ",
         "authors": [
