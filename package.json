@@ -7,6 +7,9 @@
                 "Jude \"1100110\" Young"
         ],
         "license": "LGPL v3",
+        "importPaths": [
+                "."
+        ],
         "sourcePaths": [
                 "deimos"
         ],
