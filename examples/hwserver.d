@@ -20,7 +20,7 @@ void main()
         ///  Wait for next request from client
         zmq_msg_t request;
         zmq_msg_init(&request);
-        zmq_recv(responder, &request, 0);
+        zmq_recvmsg(responder, &request, 0);
 
         writeln("Server: Recieved Hello");
         zmq_msg_close(&request);
@@ -34,7 +34,7 @@ void main()
         ///Slicing calls memcpy internally.
         immutable(void*) source = "World".ptr;
         (zmq_msg_data(&reply))[0..5] = source[0..5];
-        zmq_send(responder, &reply, 0);
+        zmq_sendmsg(responder, &reply, 0);
         zmq_msg_close(&reply);
     }
     ///  We never get here but if we did, this would be how we end

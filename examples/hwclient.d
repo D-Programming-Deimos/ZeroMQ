@@ -28,12 +28,12 @@ void main()
         (zmq_msg_data(&request))[0..5] = source[0..5];
 
         writefln("Client: Sending Hello %d...", request_nbr);
-        zmq_send(requester, &request, 0);
+        zmq_sendmsg(requester, &request, 0);
         zmq_msg_close(&request);
 
         zmq_msg_t reply;
         zmq_msg_init(&reply);
-        zmq_recv(requester, &reply, 0);
+        zmq_recvmsg(requester, &reply, 0);
         writefln("Client: Received World %d", request_nbr);
         zmq_msg_close(&reply);
     }
