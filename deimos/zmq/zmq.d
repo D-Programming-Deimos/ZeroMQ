@@ -93,7 +93,7 @@ enum
 int zmq_errno();
 
 /*  Resolves system errors and 0MQ errors to human-readable string.           */
-const char* zmq_strerror(int errnum);
+const(char)* zmq_strerror(int errnum);
 
 /******************************************************************************/
 /*  0MQ infrastructure (a.k.a. context) initialisation & termination.         */
