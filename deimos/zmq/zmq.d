@@ -31,29 +31,20 @@ import core.stdc.config;
 nothrow extern (C)
 {
 
-/******************************************************************************/
-/*  0MQ versioning support.                                                   */
-/******************************************************************************/
-
 /*  Version macros for compile-time API version detection                     */
-
 enum
 {
     ZMQ_VERSION_MAJOR   = 4,
     ZMQ_VERSION_MINOR   = 0,
-    ZMQ_VERSION_PATCH   = 1
+    ZMQ_VERSION_PATCH   = 2
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
 {
     return major * 10000 + minor * 100 + patch;
 }
-
 enum ZMQ_VERSION =
     ZMQ_MAKE_VERSION(ZMQ_VERSION_MAJOR, ZMQ_VERSION_MINOR, ZMQ_VERSION_PATCH);
-
-/*  Run-time API version detection                                            */
-void zmq_version(int* major, int* minor, int* patch);
 
 /******************************************************************************/
 /*  0MQ errors.                                                               */
@@ -92,6 +83,9 @@ enum
     EMTHREAD        = (ZMQ_HAUSNUMERO + 54)
 }//enum error_code
 
+/*  Run-time API version detection                                            */
+void zmq_version (int *major, int *minor, int *patch);
+
 /*  This function retrieves the errno as it is known to 0MQ library. The goal */
 /*  of this function is to make the code 100% portable, including where 0MQ   */
 /*  compiled with certain CRT library (on Windows) is linked to an            */
@@ -117,7 +111,7 @@ enum
 enum
 {
     ZMQ_IO_THREADS_DFLT  = 1,
-    ZMQ_MAX_SOCKETS_DFLT = 1024
+    ZMQ_MAX_SOCKETS_DFLT = 1023
 }
 
 void* zmq_ctx_new();
