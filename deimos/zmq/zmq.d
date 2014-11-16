@@ -1,7 +1,5 @@
 /*
-    Copyright (c) 2007-2012 iMatix Corporation
-    Copyright (c) 2009-2011 250bpm s.r.o.
-    Copyright (c) 2011 VMware, Inc.
+    Copyright (c) 2007-2013 Contributors as noted in the AUTHORS file
 
     This file is part of 0MQ.
 
@@ -33,9 +31,9 @@ nothrow extern (C)
 
 enum
 {
-    ZMQ_VERSION_MAJOR   = 3,
-    ZMQ_VERSION_MINOR   = 2,
-    ZMQ_VERSION_PATCH   = 4
+    ZMQ_VERSION_MAJOR   = 4,
+    ZMQ_VERSION_MINOR   = 0,
+    ZMQ_VERSION_PATCH   = 0
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
@@ -115,13 +113,15 @@ enum
 }
 
 void* zmq_ctx_new();
-int zmq_ctx_destroy(void* context);
+int zmq_ctx_term(void* context);
+int zmq_ctx_shutdown(void* ctx_);
 int zmq_ctx_set(void* context, int option, int optval);
 int zmq_ctx_get(void* context, int option);
 
 /*  Old (legacy) API                                                          */
 void* zmq_init(int io_threads);
 int zmq_term(void* context);
+int zmq_ctx_destroy(void* context);
 
 
 /******************************************************************************/
@@ -163,6 +163,7 @@ enum
     ZMQ_PUSH        = 8,
     ZMQ_XPUB        = 9,
     ZMQ_XSUB        = 10,
+    ZMQ_STREAM      = 11,
 }
 
 /*  Deprecated aliases                                                        */
@@ -197,7 +198,6 @@ enum
     ZMQ_MULTICAST_HOPS  = 25,
     ZMQ_RCVTIMEO        = 27,
     ZMQ_SNDTIMEO        = 28,
-    ZMQ_IPV4ONLY        = 31,
     ZMQ_LAST_ENDPOINT   = 32,
     ZMQ_ROUTER_MANDATORY        = 33,
     ZMQ_TCP_KEEPALIVE           = 34,
@@ -205,8 +205,23 @@ enum
     ZMQ_TCP_KEEPALIVE_IDLE      = 36,
     ZMQ_TCP_KEEPALIVE_INTVL     = 37,
     ZMQ_TCP_ACCEPT_FILTER       = 38,
-    ZMQ_DELAY_ATTACH_ON_CONNECT = 39,
+    ZMQ_IMMEDIATE               = 39,
     ZMQ_XPUB_VERBOSE            = 40,
+    ZMQ_ROUTER_RAW              = 41,
+    ZMQ_IPV6                    = 42,
+    ZMQ_MECHANISM               = 43,
+    ZMQ_PLAIN_SERVER            = 44,
+    ZMQ_PLAIN_USERNAME          = 45,
+    ZMQ_PLAIN_PASSWORD          = 46,
+    ZMQ_CURVE_SERVER            = 47,
+    ZMQ_CURVE_PUBLICKEY         = 48,
+    ZMQ_CURVE_SECRETKEY         = 49,
+    ZMQ_CURVE_SERVERKEY         = 50,
+    ZMQ_PROBE_ROUTER            = 51,
+    ZMQ_REQ_CORRELATE           = 52,
+    ZMQ_REQ_RELAXED             = 53,
+    ZMQ_CONFLATE                = 54,
+    ZMQ_ZAP_DOMAIN              = 55,
 }
 
 
@@ -220,12 +235,22 @@ enum
     ZMQ_SNDMORE = 2
 }
 
-/*  Deprecated aliases                                                        */
+/*  Security mechanisms                                                       */
 enum
 {
-    ZMQ_NOBLOCK         = ZMQ_DONTWAIT,
-    ZMQ_FAIL_UNROUTABLE = ZMQ_ROUTER_MANDATORY,
-    ZMQ_ROUTER_BEHAVIOR = ZMQ_ROUTER_MANDATORY,
+    ZMQ_NULL = 0,
+    ZMQ_PLAIN = 1,
+    ZMQ_CURVE = 2,
+}
+
+/*  Deprecated options and aliases                                            */
+enum
+{
+    ZMQ_IPV4ONLY                = 31,
+    ZMQ_DELAY_ATTACH_ON_CONNECT = ZMQ_IMMEDIATE,
+    ZMQ_NOBLOCK                 = ZMQ_DONTWAIT,
+    ZMQ_FAIL_UNROUTABLE         = ZMQ_ROUTER_MANDATORY,
+    ZMQ_ROUTER_BEHAVIOR         = ZMQ_ROUTER_MANDATORY,
 }
 
 /******************************************************************************/
@@ -248,70 +273,20 @@ enum
     ZMQ_EVENT_CLOSED            = 128,
     ZMQ_EVENT_CLOSE_FAILED      = 256,
     ZMQ_EVENT_DISCONNECTED      = 512,
+    ZMQ_EVENT_MONITOR_STOPPED   = 1024,
 
     ZMQ_EVENT_ALL  = (ZMQ_EVENT_CONNECTED | ZMQ_EVENT_CONNECT_DELAYED |
                         ZMQ_EVENT_CONNECT_RETRIED | ZMQ_EVENT_LISTENING |
                         ZMQ_EVENT_BIND_FAILED | ZMQ_EVENT_ACCEPTED |
                         ZMQ_EVENT_ACCEPT_FAILED | ZMQ_EVENT_CLOSED |
-                        ZMQ_EVENT_CLOSE_FAILED | ZMQ_EVENT_DISCONNECTED)
+                        ZMQ_EVENT_CLOSE_FAILED | ZMQ_EVENT_DISCONNECTED |
+                        ZMQ_EVENT_MONITOR_STOPPED)
 }
 
-/*  Socket event data (union member per event)                                */
+/*  Socket event data  */
 struct zmq_event_t {
-    int event;
-    private union _data {
-    private struct _connected {
-        char *addr;
-        int fd;
-    }
-    _connected connected;
-    private struct _connect_delayed {
-        char *addr;
-        int err;
-    }
-    _connect_delayed connect_delayed;
-    private struct _connect_retried {
-        char *addr;
-        int interval;
-    }
-    _connect_retried connect_retried;
-    private struct _listening {
-        char *addr;
-        int fd;
-    }
-    _listening listening;
-    private struct _bind_failed {
-        char *addr;
-        int err;
-    }
-    _bind_failed bind_failed;
-    private struct _accepted {
-        char *addr;
-        int fd;
-    }
-    _accepted accepted;
-    private struct _accept_failed {
-        char *addr;
-        int err;
-    }
-    _accept_failed accept_failed;
-    private struct _closed {
-        char *addr;
-        int fd;
-    }
-    _closed closed;
-    private struct _close_failed {
-        char *addr;
-        int err;
-    }
-    _close_failed close_failed;
-    private struct _disconnected {
-        char *addr;
-        int fd;
-    }
-    _disconnected disconnected;
-    }
-    _data data;
+    ushort event;   // id of the event as bitfield
+    int value;      // value is either error code, fd or reconnect interval
 }
 
 void* zmq_socket(void*, int type);
@@ -323,6 +298,7 @@ int zmq_connect(void* s, const char* addr);
 int zmq_unbind(void* s, const char* addr);
 int zmq_disconnect(void* s, const char* addr);
 int zmq_send(void* s, const void* buf, size_t len, int flags);
+int zmq_send_const(void *s, const void* buf, size_t len, int flags);
 int zmq_recv(void* s, void* buf, size_t len, int flags);
 int zmq_socket_monitor(void* s, const char* addr, int events);
 
@@ -361,11 +337,19 @@ struct zmq_pollitem_t
     short revents;
 }
 
+enum ZMQ_POLLITEMS_DFLT = 16;
+
 int zmq_poll(zmq_pollitem_t* items, int nitems, c_long timeout);
 
 /*  Built-in message proxy (3-way) */
 
 int zmq_proxy(void* frontend, void* backend, void* capture);
+
+/*  Encode a binary key as printable text using ZMQ RFC 32  */
+char *zmq_z85_encode (char *dest, ubyte *data, size_t size);
+
+/*  Encode a binary key from printable text per ZMQ RFC 32  */
+ubyte *zmq_z85_decode (ubyte *dest, char *string);
 
 /*  Deprecated aliases */
 enum

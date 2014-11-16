@@ -1,6 +1,5 @@
 /*
-    Copyright (c) 2009-2011 250bpm s.r.o.
-    Copyright (c) 2007-2011 Other contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2013 Contributors as noted in the AUTHORS file
 
     This file is part of 0MQ.
 
@@ -21,13 +20,20 @@
 #ifndef __ZMQ_UTILS_H_INCLUDED__
 #define __ZMQ_UTILS_H_INCLUDED__
 
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*  Handle DSO symbol visibility                                             */
 #if defined _WIN32
-#   if defined DLL_EXPORT
+#   if defined ZMQ_STATIC
+#       define ZMQ_EXPORT
+#   elif defined DLL_EXPORT
 #       define ZMQ_EXPORT __declspec(dllexport)
 #   else
 #       define ZMQ_EXPORT __declspec(dllimport)
@@ -42,6 +48,8 @@ extern "C" {
 #   endif
 #endif
 
+typedef void (zmq_thread_fn) (void*);
+
 /*  Helper functions are used by perf tests so that they don't have to care   */
 /*  about minutiae of time-related functions on different OS platforms.       */
 
@@ -54,6 +62,12 @@ ZMQ_EXPORT unsigned long zmq_stopwatch_stop (void *watch_);
 
 /*  Sleeps for specified number of seconds.                                   */
 ZMQ_EXPORT void zmq_sleep (int seconds_);
+
+/* Start a thread. Returns a handle to the thread.                            */
+ZMQ_EXPORT void *zmq_threadstart (zmq_thread_fn* func, void* arg);
+
+/* Wait for thread to complete then free up resources.                        */
+ZMQ_EXPORT void zmq_threadclose (void* thread);
 
 #undef ZMQ_EXPORT
 
