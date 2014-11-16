@@ -36,7 +36,7 @@ enum
 {
     ZMQ_VERSION_MAJOR   = 4,
     ZMQ_VERSION_MINOR   = 0,
-    ZMQ_VERSION_PATCH   = 4
+    ZMQ_VERSION_PATCH   = 5
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
@@ -346,6 +346,7 @@ int zmq_poll(zmq_pollitem_t* items, int nitems, c_long timeout);
 /*  Built-in message proxy (3-way) */
 
 int zmq_proxy(void* frontend, void* backend, void* capture);
+int zmq_proxy_steerable (void *frontend, void *backend, void *capture, void *control);
 
 /*  Encode a binary key as printable text using ZMQ RFC 32  */
 char *zmq_z85_encode (char *dest, ubyte *data, size_t size);
