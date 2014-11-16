@@ -15,6 +15,14 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    *************************************************************************
+    NOTE to contributors. This file comprises the principal public contract
+    for ZeroMQ API users (along with zmq_utils.h). Any change to this file
+    supplied in a stable release SHOULD not break existing applications.
+    In practice this means that the value of constants must not change, and
+    that old values may not be reused for new constants.
+    *************************************************************************
 */
 
 #ifndef __ZMQ_H_INCLUDED__
@@ -62,6 +70,9 @@ typedef __int32 int32_t;
 #   ifndef uint16_t
 typedef unsigned __int16 uint16_t;
 #   endif
+#   ifndef uint8_t
+typedef unsigned __int8 uint8_t;
+#   endif
 #else
 #   include <stdint.h>
 #endif
@@ -74,7 +85,7 @@ typedef unsigned __int16 uint16_t;
 /*  Version macros for compile-time API version detection                     */
 #define ZMQ_VERSION_MAJOR 4
 #define ZMQ_VERSION_MINOR 0
-#define ZMQ_VERSION_PATCH 0
+#define ZMQ_VERSION_PATCH 1
 
 #define ZMQ_MAKE_VERSION(major, minor, patch) \
     ((major) * 10000 + (minor) * 100 + (patch))
