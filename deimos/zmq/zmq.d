@@ -36,7 +36,7 @@ enum
 {
     ZMQ_VERSION_MAJOR   = 4,
     ZMQ_VERSION_MINOR   = 0,
-    ZMQ_VERSION_PATCH   = 2
+    ZMQ_VERSION_PATCH   = 3
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
