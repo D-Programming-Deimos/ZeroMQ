@@ -4,7 +4,8 @@
         "homepage": "http://github.com/D-Programming-Deimos/ZeroMQ",
         "authors": [
                 "itiu",
-                "Jude \"1100110\" Young"
+                "Jude \"1100110\" Young",
+                "Lars T. Kyllingstad"
         ],
         "license": "LGPL v3",
         "importPaths": [

@@ -1,6 +1,5 @@
 /*
-    Copyright (c) 2009-2011 250bpm s.r.o.
-    Copyright (c) 2007-2011 Other contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2013 Contributors as noted in the AUTHORS file
 
     This file is part of 0MQ.
 
@@ -44,6 +43,22 @@ nothrow extern (C)
 #endif
 ++/
 
+/* These functions are documented by man pages                                */
+
+/* Encode data with Z85 encoding. Returns encoded data                        */
+char *zmq_z85_encode (char *dest, ubyte *data, size_t size);
+
+/* Decode data with Z85 encoding. Returns decoded data                        */
+ubyte *zmq_z85_decode (ubyte *dest, char *string);
+
+/* Generate z85-encoded public and private keypair with libsodium.            */
+/* Returns 0 on success.                                                      */
+int zmq_curve_keypair (char *z85_public_key, char *z85_secret_key);
+
+alias typeof(*(void function(void*)).init) zmq_thread_fn;
+
+/*  These functions are not documented by man pages                           */
+
 /*  Helper functions are used by perf tests so that they don't have to care   */
 /*  about minutiae of time-related functions on different OS platforms.       */
 
@@ -56,5 +71,11 @@ c_ulong zmq_stopwatch_stop(void* watch_);
 
 /*  Sleeps for specified number of seconds.                                   */
 void zmq_sleep(int seconds_);
+
+/* Start a thread. Returns a handle to the thread.                            */
+void *zmq_threadstart (zmq_thread_fn* func, void* arg);
+
+/* Wait for thread to complete then free up resources.                        */
+void zmq_threadclose (void* thread);
 
 }
