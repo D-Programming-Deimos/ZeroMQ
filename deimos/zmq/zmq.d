@@ -130,7 +130,7 @@ int zmq_ctx_destroy(void* context);
 /*  0MQ message definition.                                                   */
 /******************************************************************************/
 
-struct zmq_msg_t { ubyte[32] _; }
+struct zmq_msg_t { ubyte[64] _; }
 
 int zmq_msg_init(zmq_msg_t* msg);
 int zmq_msg_init_size(zmq_msg_t* msg, size_t size);
