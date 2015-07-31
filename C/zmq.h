@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2007-2014 Contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2015 Contributors as noted in the AUTHORS file
 
     This file is part of 0MQ.
 
@@ -31,7 +31,7 @@
 /*  Version macros for compile-time API version detection                     */
 #define ZMQ_VERSION_MAJOR 4
 #define ZMQ_VERSION_MINOR 1
-#define ZMQ_VERSION_PATCH 1
+#define ZMQ_VERSION_PATCH 2
 
 #define ZMQ_MAKE_VERSION(major, minor, patch) \
     ((major) * 10000 + (minor) * 100 + (patch))
@@ -71,18 +71,9 @@ extern "C" {
 #endif
 
 /*  Define integer types needed for event interface                          */
+#define ZMQ_DEFINED_STDINT 1
 #if defined ZMQ_HAVE_SOLARIS || defined ZMQ_HAVE_OPENVMS
 #   include <inttypes.h>
-#elif defined _MSC_VER && _MSC_VER < 1600
-#   ifndef int32_t
-typedef __int32 int32_t;
-#   endif
-#   ifndef uint16_t
-typedef unsigned __int16 uint16_t;
-#   endif
-#   ifndef uint8_t
-typedef unsigned __int8 uint8_t;
-#   endif
 #else
 #   include <stdint.h>
 #endif
@@ -295,7 +286,7 @@ ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
 #define ZMQ_ZAP_DOMAIN 55
 #define ZMQ_ROUTER_HANDOVER 56
 #define ZMQ_TOS 57
-#define ZMQ_CONNECT_RID 61 
+#define ZMQ_CONNECT_RID 61
 #define ZMQ_GSSAPI_SERVER 62
 #define ZMQ_GSSAPI_PRINCIPAL 63
 #define ZMQ_GSSAPI_SERVICE_PRINCIPAL 64

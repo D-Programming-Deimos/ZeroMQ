@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2007-2014 Contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2015 Contributors as noted in the AUTHORS file
 
     This file is part of 0MQ.
 
@@ -36,7 +36,7 @@ enum
 {
     ZMQ_VERSION_MAJOR   = 4,
     ZMQ_VERSION_MINOR   = 1,
-    ZMQ_VERSION_PATCH   = 1
+    ZMQ_VERSION_PATCH   = 2
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
