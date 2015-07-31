@@ -36,7 +36,7 @@ enum
 {
     ZMQ_VERSION_MAJOR   = 4,
     ZMQ_VERSION_MINOR   = 1,
-    ZMQ_VERSION_PATCH   = 0
+    ZMQ_VERSION_PATCH   = 1
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
@@ -135,7 +135,7 @@ int zmq_ctx_destroy(void* context);
 /*  0MQ message definition.                                                   */
 /******************************************************************************/
 
-struct zmq_msg_t { ubyte[48] _; }
+struct zmq_msg_t { ubyte[64] _; }
 
 int zmq_msg_init(zmq_msg_t* msg);
 int zmq_msg_init_size(zmq_msg_t* msg, size_t size);
@@ -212,7 +212,6 @@ enum
     ZMQ_TCP_KEEPALIVE_CNT       = 35,
     ZMQ_TCP_KEEPALIVE_IDLE      = 36,
     ZMQ_TCP_KEEPALIVE_INTVL     = 37,
-    ZMQ_TCP_ACCEPT_FILTER       = 38,
     ZMQ_IMMEDIATE               = 39,
     ZMQ_XPUB_VERBOSE            = 40,
     ZMQ_ROUTER_RAW              = 41,
@@ -232,16 +231,12 @@ enum
     ZMQ_ZAP_DOMAIN              = 55,
     ZMQ_ROUTER_HANDOVER         = 56,
     ZMQ_TOS                     = 57,
-    ZMQ_IPC_FILTER_PID          = 58,
-    ZMQ_IPC_FILTER_UID          = 59,
-    ZMQ_IPC_FILTER_GID          = 60,
     ZMQ_CONNECT_RID             = 61,
     ZMQ_GSSAPI_SERVER           = 62,
     ZMQ_GSSAPI_PRINCIPAL        = 63,
     ZMQ_GSSAPI_SERVICE_PRINCIPAL= 64,
     ZMQ_GSSAPI_PLAINTEXT        = 65,
     ZMQ_HANDSHAKE_IVL           = 66,
-    ZMQ_IDENTITY_FD             = 67,
     ZMQ_SOCKS_PROXY             = 68,
     ZMQ_XPUB_NODROP             = 69,
 }
@@ -274,6 +269,10 @@ enum
 /*  Deprecated options and aliases                                            */
 enum
 {
+    ZMQ_TCP_ACCEPT_FILTER       = 38,
+    ZMQ_IPC_FILTER_PID          = 58,
+    ZMQ_IPC_FILTER_UID          = 59,
+    ZMQ_IPC_FILTER_GID          = 60,
     ZMQ_IPV4ONLY                = 31,
     ZMQ_DELAY_ATTACH_ON_CONNECT = ZMQ_IMMEDIATE,
     ZMQ_NOBLOCK                 = ZMQ_DONTWAIT,

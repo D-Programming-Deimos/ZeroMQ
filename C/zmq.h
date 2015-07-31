@@ -31,7 +31,7 @@
 /*  Version macros for compile-time API version detection                     */
 #define ZMQ_VERSION_MAJOR 4
 #define ZMQ_VERSION_MINOR 1
-#define ZMQ_VERSION_PATCH 0
+#define ZMQ_VERSION_PATCH 1
 
 #define ZMQ_MAKE_VERSION(major, minor, patch) \
     ((major) * 10000 + (minor) * 100 + (patch))
@@ -204,7 +204,7 @@ ZMQ_EXPORT int zmq_ctx_destroy (void *context);
 /*  0MQ message definition.                                                   */
 /******************************************************************************/
 
-typedef struct zmq_msg_t {unsigned char _ [48];} zmq_msg_t;
+typedef struct zmq_msg_t {unsigned char _ [64];} zmq_msg_t;
 
 typedef void (zmq_free_fn) (void *data, void *hint);
 
@@ -276,7 +276,6 @@ ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
 #define ZMQ_TCP_KEEPALIVE_CNT 35
 #define ZMQ_TCP_KEEPALIVE_IDLE 36
 #define ZMQ_TCP_KEEPALIVE_INTVL 37
-#define ZMQ_TCP_ACCEPT_FILTER 38
 #define ZMQ_IMMEDIATE 39
 #define ZMQ_XPUB_VERBOSE 40
 #define ZMQ_ROUTER_RAW 41
@@ -296,16 +295,12 @@ ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
 #define ZMQ_ZAP_DOMAIN 55
 #define ZMQ_ROUTER_HANDOVER 56
 #define ZMQ_TOS 57
-#define ZMQ_IPC_FILTER_PID 58
-#define ZMQ_IPC_FILTER_UID 59
-#define ZMQ_IPC_FILTER_GID 60
 #define ZMQ_CONNECT_RID 61 
 #define ZMQ_GSSAPI_SERVER 62
 #define ZMQ_GSSAPI_PRINCIPAL 63
 #define ZMQ_GSSAPI_SERVICE_PRINCIPAL 64
 #define ZMQ_GSSAPI_PLAINTEXT 65
 #define ZMQ_HANDSHAKE_IVL 66
-#define ZMQ_IDENTITY_FD 67
 #define ZMQ_SOCKS_PROXY 68
 #define ZMQ_XPUB_NODROP 69
 
@@ -325,6 +320,10 @@ ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
 #define ZMQ_GSSAPI 3
 
 /*  Deprecated options and aliases                                            */
+#define ZMQ_TCP_ACCEPT_FILTER       38
+#define ZMQ_IPC_FILTER_PID          58
+#define ZMQ_IPC_FILTER_UID          59
+#define ZMQ_IPC_FILTER_GID          60
 #define ZMQ_IPV4ONLY                31
 #define ZMQ_DELAY_ATTACH_ON_CONNECT ZMQ_IMMEDIATE
 #define ZMQ_NOBLOCK                 ZMQ_DONTWAIT
