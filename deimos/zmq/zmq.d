@@ -28,7 +28,7 @@ module deimos.zmq.zmq;
 
 import core.stdc.config;
 
-nothrow @nogc extern (C)
+nothrow extern (C)
 {
 
 /*  Version macros for compile-time API version detection                     */
