@@ -12,9 +12,12 @@ has a score of language APIs and runs on most operating systems. ØMQ is from iM
 and is LGPL open source."
 	-quote straight from: http://zguide.zeromq.org/page:all
 
-The two files in examples/ were taken directly from that page.
-
+Usage can be derived by translating the guide above using the interface(s)
+here. Alternatively some wrapper implementations are listed below.
 
 Usage:
 	import deimos.zmq.zmq;
 	link your program with zmq, and Zap, Pow! (to quote the site) it works.
+
+Implementations:
+    https://github.com/kyllingstad/zmqd
