@@ -1,25 +1,35 @@
 /*
-    Copyright (c) 2007-2015 Contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2016 Contributors as noted in the AUTHORS file
 
-    This file is part of 0MQ.
+    This file is part of libzmq, the ZeroMQ core engine in C++.
 
-    0MQ is free software; you can redistribute it and/or modify it under
-    the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
+    libzmq is free software; you can redistribute it and/or modify it under
+    the terms of the GNU Lesser General Public License (LGPL) as published
+    by the Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    0MQ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    As a special exception, the Contributors give you permission to link
+    this library with independent modules to produce an executable,
+    regardless of the license terms of these independent modules, and to
+    copy and distribute the resulting executable under terms of your choice,
+    provided that you also meet, for each linked independent module, the
+    terms and conditions of the license of that module. An independent
+    module is a module which is not derived from or based on this library.
+    If you modify this library, you must extend this exception to your
+    version of the library.
+
+    libzmq is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+    License for more details.
 
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     *************************************************************************
     NOTE to contributors. This file comprises the principal public contract
-    for ZeroMQ API users (along with zmq_utils.h). Any change to this file
-    supplied in a stable release SHOULD not break existing applications.
+    for ZeroMQ API users. Any change to this file supplied in a stable
+    release SHOULD not break existing applications.
     In practice this means that the value of constants must not change, and
     that old values may not be reused for new constants.
     *************************************************************************
@@ -35,8 +45,8 @@ nothrow extern (C)
 enum
 {
     ZMQ_VERSION_MAJOR   = 4,
-    ZMQ_VERSION_MINOR   = 1,
-    ZMQ_VERSION_PATCH   = 4
+    ZMQ_VERSION_MINOR   = 2,
+    ZMQ_VERSION_PATCH   = 0
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
@@ -99,7 +109,6 @@ void zmq_version (int *major, int *minor, int *patch);
 /*  0MQ infrastructure (a.k.a. context) initialisation & termination.         */
 /******************************************************************************/
 
-/*  New API                                                                   */
 /*  Context options                                                           */
 enum
 {
@@ -108,6 +117,7 @@ enum
     ZMQ_SOCKET_LIMIT = 3,
     ZMQ_THREAD_PRIORITY = 3,
     ZMQ_THREAD_SCHED_POLICY = 4,
+    ZMQ_MAX_MSGSZ = 5,
 }
 
 /*  Default for new contexts                                                  */
@@ -121,7 +131,7 @@ enum
 
 void* zmq_ctx_new();
 int zmq_ctx_term(void* context);
-int zmq_ctx_shutdown(void* ctx_);
+int zmq_ctx_shutdown(void* context);
 int zmq_ctx_set(void* context, int option, int optval);
 int zmq_ctx_get(void* context, int option);
 
@@ -135,6 +145,12 @@ int zmq_ctx_destroy(void* context);
 /*  0MQ message definition.                                                   */
 /******************************************************************************/
 
+/* Some architectures, like sparc64 and some variance of aarch64, enforce pointer
+ * alignment and raise sigbus on violations. Make sure applications allocate
+ * zmq_msg_t on addresses aligned on a pointer-size-boundary to avoid this issue.
+ */
+// FIXME Paul would appreciate some help translating the preprocessor
+// architecture-detection logic to version statements.
 struct zmq_msg_t { ubyte[64] _; }
 
 int zmq_msg_init(zmq_msg_t* msg);
@@ -239,6 +255,24 @@ enum
     ZMQ_HANDSHAKE_IVL           = 66,
     ZMQ_SOCKS_PROXY             = 68,
     ZMQ_XPUB_NODROP             = 69,
+    ZMQ_BLOCKY                  = 70,
+    ZMQ_XPUB_MANUAL             = 71,
+    ZMQ_XPUB_WELCOME_MSG        = 72,
+    ZMQ_STREAM_NOTIFY           = 73,
+    ZMQ_INVERT_MATCHING         = 74,
+    ZMQ_HEARTBEAT_IVL           = 75,
+    ZMQ_HEARTBEAT_TTL           = 76,
+    ZMQ_HEARTBEAT_TIMEOUT       = 77,
+    ZMQ_XPUB_VERBOSER           = 78,
+    ZMQ_CONNECT_TIMOUT          = 79,
+    ZMQ_TCP_MAXRT               = 80,
+    ZMQ_THREAT_SAFE             = 81,
+    ZMQ_MULTICAST_MAXTPDU       = 84,
+    ZMQ_VMCI_BUFFER_SIZE        = 85,
+    ZMQ_VMCI_BUFFER_MIN_SIZE    = 86,
+    ZMQ_VMCI_BUFFER_MAX_SIZE    = 87,
+    ZMQ_VMCI_CONNECT_TIMEOUT    = 88,
+    ZMQ_USE_FD                  = 89,
 }
 
 
@@ -246,7 +280,6 @@ enum
 enum
 {
     ZMQ_MORE = 1,
-    ZMQ_SRCFD = 2,
     ZMQ_SHARED = 3,
 }
 
@@ -266,6 +299,12 @@ enum
     ZMQ_GSSAPI = 3,
 }
 
+/*  RADIO_DISH protocol                                                       */
+enum
+{
+    ZMQ_GROUP_MAX_LENGTH = 15,
+}
+
 /*  Deprecated options and aliases                                            */
 enum
 {
@@ -280,11 +319,16 @@ enum
     ZMQ_ROUTER_BEHAVIOR         = ZMQ_ROUTER_MANDATORY,
 }
 
+/* Deprecated Message options                                                 */
+deprecated enum {
+    ZMQ_SRCFD = 2,
+}
+
 /******************************************************************************/
 /*  0MQ socket events and monitoring                                          */
 /******************************************************************************/
 
-/*  Socket transport events (TCP and IPC only)                                */
+/*  Socket transport events (TCP, IPC, and TIPC only)                                */
 
 enum
 {
@@ -330,7 +374,8 @@ enum
 {
     ZMQ_POLLIN  = 1,
     ZMQ_POLLOUT = 2,
-    ZMQ_POLLERR = 4
+    ZMQ_POLLERR = 4,
+    ZMQ_POLLPRI = 8,
 }
 
 struct zmq_pollitem_t
@@ -378,7 +423,9 @@ enum
 int zmq_device(int type, void* frontend, void* backend);
 int zmq_sendmsg(void* s, zmq_msg_t* msg, int flags);
 int zmq_recvmsg(void* s, zmq_msg_t* msg, int flags);
-
+struct iovec;
+int zmq_sendiov(void* s, iovec* iov, size_t count, int flags);
+int zmq_recviov(void* s, iovec* iov, size_t* count, int flags);
 
 /******************************************************************************/
 /*  Encryption functions                                                      */
@@ -390,21 +437,29 @@ char* zmq_z85_encode(char* dest, ubyte* data, size_t size);
 /*  Decode data with Z85 encoding. Returns decoded data                       */
 ubyte* zmq_z85_decode(ubyte* dest, char* string_);
 
-/*  Generate z85-encoded public and private keypair with libsodium.           */
+/*  Generate z85-encoded public and private keypair with tweetnacl/libsodium. */
 /*  Returns 0 on success.                                                     */
 int zmq_curve_keypair(char* z85_public_key, char* z85_secret_key);
 
+/*  Derive the z85-encoded public key from the z85-encoded secret key.        */
+/*  Returns 0 on success.                                                     */
+int zmq_curve_public(char* z85_public_key, const(char)* z85_secret_key_);
+
+/******************************************************************************/
+/*  Atomic utility methods                                                    */
+/******************************************************************************/
+void* zmq_atomic_counter_new();
+void zmq_atomic_counter_set(void* counter, int value);
+int zmq_atmoic_counter_inc(void* counter);
+int zmq_atomic_counter_dec(void* counter);
+int zmq_atomic_counter_value(void* counter);
+void zmq_atomic_counter_destroy(void** counter_p);
 
 /******************************************************************************/
 /*  These functions are not documented by man pages -- use at your own risk.  */
 /*  If you need these to be part of the formal ZMQ API, then (a) write a man  */
 /*  page, and (b) write a test case in tests.                                 */
 /******************************************************************************/
-
-struct iovec;
-
-int zmq_sendiov(void* s, iovec* iov, size_t count, int flags);
-int zmq_recviov(void* s, iovec* iov, size_t* count, int flags);
 
 /*  Helper functions are used by perf tests so that they don't have to care   */
 /*  about minutiae of time-related functions on different OS platforms.       */
@@ -425,5 +480,89 @@ void* zmq_threadstart(void function(void*) nothrow func, void* arg);
 /* Wait for thread to complete then free up resources.                        */
 void zmq_threadclose(void* thread);
 
+
+/******************************************************************************/
+/*  These functions are DRAFT and disabled in stable releases, and subject to */
+/*  change at ANY time until declared stable.                                 */
+/******************************************************************************/
+version(ZMQ_BUILD_DRAFT_API)
+{
+/*  DRAFT Socket types.                                                       */
+enum {
+    ZMQ_SERVER  = 12,
+    ZMQ_CLIENT  = 13,
+    ZMQ_RADIO   = 14,
+    ZMQ_DISH    = 15,
+    ZMQ_GATHER  = 16,
+    ZMQ_SCATTER = 17,
+    ZMQ_DGRAM   = 18,
+}
+
+/*  DRAFT Socket methods.                                                     */
+int zmq_join(void* s, const(char)* group);
+int zmq_leave(void* s, const(char)* group);
+
+/*  DRAFT Msg methods.                                                        */
+int zmq_msg_set_routing_id(zmq_msg_t* msg, uint routing_id);
+uint zmq_msg_routing_id(zmq_msg_t* msg);
+int zmq_msg_set_group(zmq_msg_t* msg, const(char)* group);
+const(char)* zmq_msg_group(zmq_msg_t* msg);
+
+/******************************************************************************/
+/*  Poller polling on sockets,fd, and thread-safe sockets                     */
+/******************************************************************************/
+
+struct zmq_poller_event_t
+{
+    void* socket;
+    version(win32)
+    {
+        SOCKET fd;
+    }
+    else
+    {
+        int fd;
+    }
+    void* user_data;
+    short events;
+}
+
+void* zmq_poller_new();
+int  zmq_poller_destroy(void** poller_p);
+int  zmq_poller_add(void* poller, void* socket, void* user_data, short events);
+int  zmq_poller_modify(void* poller, void* socket, short events);
+int  zmq_poller_remove(void* poller, void* socket);
+int  zmq_poller_wait(void* poller, zmq_poller_event_t* event, c_long timeout);
+int  zmq_poller_wait_all(void* poller, zmq_poller_event_t* events, int n_events, c_long timout);
+
+version (win32)
+{
+    int zmq_poller_add_fd(void* poller, SOCKET fd, void* user_data, short_events);
+    int zmq_poller_modify_fd(void* poller, SOCKET fd, short events);
+    int zmq_poller_remove_fd(void* poller, SOCKET fd);
+}
+else
+{
+    int zmq_poller_add_fd(void* poller, int fd, void* user_data, short_events);
+    int zmq_poller_modify_fd(void* poller, int fd, short events);
+    int zmq_poller_remove_fd(void* poller, int fd);
+}
+
+/******************************************************************************/
+/*  Scheduling timers                                                         */
+/******************************************************************************/
+
+alias zmq_timer_fn = void function(int timer_id, void* arg);
+
+void*  zmq_timers_new();
+int    zmq_timers_destroy(void** timers_p);
+int    zmq_timers_add(void* timers, size_t interval, zmq_timer_fn handler, void* arg);
+int    zmq_timers_cancel(void* timers, int timer_id);
+int    zmq_timers_set_interval(void* timers, int timer_id, size_t interval);
+int    zmq_timers_reset(void* timers, int timer_id);
+c_long zmq_timers_timeout(void* timers);
+int    zmq_timers_execute(void* timers);
+
+} // version(ZMQ_BUILD_DRAFT_API)
 
 }// extern (C)
