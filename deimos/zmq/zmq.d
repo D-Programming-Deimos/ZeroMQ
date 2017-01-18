@@ -149,9 +149,10 @@ int zmq_ctx_destroy(void* context);
  * alignment and raise sigbus on violations. Make sure applications allocate
  * zmq_msg_t on addresses aligned on a pointer-size-boundary to avoid this issue.
  */
-// FIXME Paul would appreciate some help translating the preprocessor
-// architecture-detection logic to version statements.
-struct zmq_msg_t { ubyte[64] _; }
+struct zmq_msg_t
+{
+    align((void*).sizeof) ubyte[64] _;
+}
 
 int zmq_msg_init(zmq_msg_t* msg);
 int zmq_msg_init_size(zmq_msg_t* msg, size_t size);
