@@ -321,7 +321,7 @@ enum
 }
 
 /* Deprecated Message options                                                 */
-deprecated enum {
+enum {
     ZMQ_SRCFD = 2,
 }
 
