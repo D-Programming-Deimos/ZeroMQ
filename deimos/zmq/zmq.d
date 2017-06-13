@@ -267,7 +267,7 @@ enum
     ZMQ_XPUB_VERBOSER           = 78,
     ZMQ_CONNECT_TIMOUT          = 79,
     ZMQ_TCP_MAXRT               = 80,
-    ZMQ_THREAT_SAFE             = 81,
+    ZMQ_THREAD_SAFE             = 81,
     ZMQ_MULTICAST_MAXTPDU       = 84,
     ZMQ_VMCI_BUFFER_SIZE        = 85,
     ZMQ_VMCI_BUFFER_MIN_SIZE    = 86,
@@ -321,7 +321,8 @@ enum
 }
 
 /* Deprecated Message options                                                 */
-enum {
+enum
+{
     ZMQ_SRCFD = 2,
 }
 
@@ -382,7 +383,7 @@ enum
 struct zmq_pollitem_t
 {
     void* socket;
-    version (win32)
+    version (Windows)
     {
         SOCKET fd;
     }
@@ -444,14 +445,14 @@ int zmq_curve_keypair(char* z85_public_key, char* z85_secret_key);
 
 /*  Derive the z85-encoded public key from the z85-encoded secret key.        */
 /*  Returns 0 on success.                                                     */
-int zmq_curve_public(char* z85_public_key, const(char)* z85_secret_key_);
+int zmq_curve_public(char* z85_public_key, const(char)* z85_secret_key);
 
 /******************************************************************************/
 /*  Atomic utility methods                                                    */
 /******************************************************************************/
 void* zmq_atomic_counter_new();
 void zmq_atomic_counter_set(void* counter, int value);
-int zmq_atmoic_counter_inc(void* counter);
+int zmq_atomic_counter_inc(void* counter);
 int zmq_atomic_counter_dec(void* counter);
 int zmq_atomic_counter_value(void* counter);
 void zmq_atomic_counter_destroy(void** counter_p);
@@ -489,7 +490,8 @@ void zmq_threadclose(void* thread);
 version(ZMQ_BUILD_DRAFT_API)
 {
 /*  DRAFT Socket types.                                                       */
-enum {
+enum
+{
     ZMQ_SERVER  = 12,
     ZMQ_CLIENT  = 13,
     ZMQ_RADIO   = 14,
@@ -516,7 +518,7 @@ const(char)* zmq_msg_group(zmq_msg_t* msg);
 struct zmq_poller_event_t
 {
     void* socket;
-    version(win32)
+    version(Windows)
     {
         SOCKET fd;
     }
@@ -536,9 +538,9 @@ int  zmq_poller_remove(void* poller, void* socket);
 int  zmq_poller_wait(void* poller, zmq_poller_event_t* event, c_long timeout);
 int  zmq_poller_wait_all(void* poller, zmq_poller_event_t* events, int n_events, c_long timout);
 
-version (win32)
+version (Windows)
 {
-    int zmq_poller_add_fd(void* poller, SOCKET fd, void* user_data, short_events);
+    int zmq_poller_add_fd(void* poller, SOCKET fd, void* user_data, short events);
     int zmq_poller_modify_fd(void* poller, SOCKET fd, short events);
     int zmq_poller_remove_fd(void* poller, SOCKET fd);
 }
