@@ -46,7 +46,7 @@ enum
 {
     ZMQ_VERSION_MAJOR   = 4,
     ZMQ_VERSION_MINOR   = 2,
-    ZMQ_VERSION_PATCH   = 0
+    ZMQ_VERSION_PATCH   = 1
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
@@ -499,6 +499,19 @@ enum
     ZMQ_GATHER  = 16,
     ZMQ_SCATTER = 17,
     ZMQ_DGRAM   = 18,
+}
+
+/*  DRAFT 0MQ socket events and monitoring                                    */
+enum
+{
+    ZMQ_EVENT_HANDSHAKE_FAILED  = 0x0800,
+    ZMQ_EVENT_HANDSHAKE_SUCCEED = 0x1000,
+}
+
+/*  DRAFT Context options                                                     */
+enum
+{
+    ZMQ_MSG_T_SIZE = 6,
 }
 
 /*  DRAFT Socket methods.                                                     */
