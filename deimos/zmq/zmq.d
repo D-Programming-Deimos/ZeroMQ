@@ -385,6 +385,7 @@ struct zmq_pollitem_t
     void* socket;
     version (Windows)
     {
+        import core.sys.windows.winsock2: SOCKET;
         SOCKET fd;
     }
     else
