@@ -44,7 +44,7 @@ nothrow extern (C)
 /*  Version macros for compile-time API version detection                     */
 enum ZMQ_VERSION_MAJOR = 4;
 enum ZMQ_VERSION_MINOR = 3;
-enum ZMQ_VERSION_PATCH = 1;
+enum ZMQ_VERSION_PATCH = 2;
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
 {
@@ -558,6 +558,11 @@ enum ZMQ_LOOPBACK_FASTPATH = 94;
 enum ZMQ_METADATA = 95;
 enum ZMQ_MULTICAST_LOOP = 96;
 enum ZMQ_ROUTER_NOTIFY = 97;
+enum ZMQ_XPUB_MANUAL_LAST_VALUE = 98;
+enum ZMQ_SOCKS_USERNAME = 99;
+enum ZMQ_SOCKS_PASSWORD = 100;
+enum ZMQ_IN_BATCH_SIZE = 101;
+enum ZMQ_OUT_BATCH_SIZE = 102;
 
 /*  DRAFT Context options                                                     */
 enum ZMQ_ZERO_COPY_RECV = 10;
@@ -586,17 +591,19 @@ enum ZMQ_NOTIFY_DISCONNECT = 2;
 /*  Poller polling on sockets,fd, and thread-safe sockets                     */
 /******************************************************************************/
 
+version(Windows)
+{
+    alias zmq_fd_t = SOCKET;
+}
+else
+{
+    alias zmq_fd_t = int;
+}
+
 struct zmq_poller_event_t
 {
     void* socket;
-    version(Windows)
-    {
-        SOCKET fd;
-    }
-    else
-    {
-        int fd;
-    }
+    zmq_fd_t fd;
     void* user_data;
     short events;
 }
@@ -611,23 +618,28 @@ int zmq_poller_wait_all(void* poller,
                         zmq_poller_event_t* events,
                         int n_events,
                         c_long timout);
+int zmq_poller_fd(void* poller, zmq_fd_t* fd);
 
-version (Windows)
-{
-    int zmq_poller_add_fd(void* poller, SOCKET fd, void* user_data, short events);
-    int zmq_poller_modify_fd(void* poller, SOCKET fd, short events);
-    int zmq_poller_remove_fd(void* poller, SOCKET fd);
-}
-else
-{
-    int zmq_poller_add_fd(void* poller, int fd, void* user_data, short events);
-    int zmq_poller_modify_fd(void* poller, int fd, short events);
-    int zmq_poller_remove_fd(void* poller, int fd);
-}
+int zmq_poller_add_fd(void* poller, zmq_fd_t fd, void* user_data, short events);
+int zmq_poller_modify_fd(void* poller, zmq_fd_t fd, short events);
+int zmq_poller_remove_fd(void* poller, zmq_fd_t fd);
 
 int zmq_socket_get_peer_state(void* socket,
                               const(void)* routing_id,
                               size_t routing_id_size);
+
+/*  DRAFT Socket monitoring events                                            */
+enum ZMQ_EVENT_PIPES_STATS = 0x10000;
+
+enum ZMQ_CURRENT_EVENT_VERSION = 1;
+enum ZMQ_CURRENT_EVENT_VERSION_DRAFT = 2;
+
+enum ZMQ_EVENT_ALL_V1 = ZMQ_EVENT_ALL;
+enum ZMQ_EVENT_ALL_V2 = ZMQ_EVENT_ALL_V1 | ZMQ_EVENT_PIPES_STATS;
+
+int zmq_socket_monitor_versioned(
+  void* s_, const(char)* addr_, ulong events_, int event_version_, int type_);
+int zmq_socket_monitor_pipes_stats(void* s);
 
 } // version(ZMQ_BUILD_DRAFT_API)
 
