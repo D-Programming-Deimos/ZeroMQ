@@ -435,10 +435,10 @@ int zmq_recviov(void* s, iovec* iov, size_t* count, int flags);
 /******************************************************************************/
 
 /*  Encode data with Z85 encoding. Returns encoded data                       */
-char* zmq_z85_encode(char* dest, ubyte* data, size_t size);
+char* zmq_z85_encode(char* dest, const(ubyte)* data, size_t size);
 
 /*  Decode data with Z85 encoding. Returns decoded data                       */
-ubyte* zmq_z85_decode(ubyte* dest, char* string_);
+ubyte* zmq_z85_decode(ubyte* dest, const(char)* string_);
 
 /*  Generate z85-encoded public and private keypair with tweetnacl/libsodium. */
 /*  Returns 0 on success.                                                     */
