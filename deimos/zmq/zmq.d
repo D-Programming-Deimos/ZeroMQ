@@ -560,7 +560,7 @@ version (Windows)
 }
 else
 {
-    int zmq_poller_add_fd(void* poller, int fd, void* user_data, short_events);
+    int zmq_poller_add_fd(void* poller, int fd, void* user_data, short events);
     int zmq_poller_modify_fd(void* poller, int fd, short events);
     int zmq_poller_remove_fd(void* poller, int fd);
 }
