@@ -44,7 +44,7 @@ nothrow extern (C)
 /*  Version macros for compile-time API version detection                     */
 enum ZMQ_VERSION_MAJOR = 4;
 enum ZMQ_VERSION_MINOR = 2;
-enum ZMQ_VERSION_PATCH = 4;
+enum ZMQ_VERSION_PATCH = 5;
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
 {
