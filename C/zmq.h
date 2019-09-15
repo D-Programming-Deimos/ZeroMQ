@@ -41,7 +41,7 @@
 /*  Version macros for compile-time API version detection                     */
 #define ZMQ_VERSION_MAJOR 4
 #define ZMQ_VERSION_MINOR 2
-#define ZMQ_VERSION_PATCH 2
+#define ZMQ_VERSION_PATCH 3
 
 #define ZMQ_MAKE_VERSION(major, minor, patch) \
     ((major) * 10000 + (minor) * 100 + (patch))
@@ -66,10 +66,9 @@ extern "C" {
 
 #ifdef __MINGW32__
 //  Require Windows XP or higher with MinGW for getaddrinfo().
-#if(_WIN32_WINNT >= 0x0600)
+#if(_WIN32_WINNT >= 0x0501)
 #else
-#undef _WIN32_WINNT
-#define _WIN32_WINNT 0x0600
+#error You need at least Windows XP target
 #endif
 #endif
 #include <winsock2.h>
@@ -101,6 +100,9 @@ extern "C" {
 #elif defined _MSC_VER && _MSC_VER < 1600
 #   ifndef int32_t
         typedef __int32 int32_t;
+#   endif
+#   ifndef uint32_t
+        typedef unsigned __int32 uint32_t;
 #   endif
 #   ifndef uint16_t
         typedef unsigned __int16 uint16_t;
@@ -266,11 +268,11 @@ ZMQ_EXPORT int zmq_msg_close (zmq_msg_t *msg);
 ZMQ_EXPORT int zmq_msg_move (zmq_msg_t *dest, zmq_msg_t *src);
 ZMQ_EXPORT int zmq_msg_copy (zmq_msg_t *dest, zmq_msg_t *src);
 ZMQ_EXPORT void *zmq_msg_data (zmq_msg_t *msg);
-ZMQ_EXPORT size_t zmq_msg_size (zmq_msg_t *msg);
-ZMQ_EXPORT int zmq_msg_more (zmq_msg_t *msg);
-ZMQ_EXPORT int zmq_msg_get (zmq_msg_t *msg, int property);
+ZMQ_EXPORT size_t zmq_msg_size (const zmq_msg_t *msg);
+ZMQ_EXPORT int zmq_msg_more (const zmq_msg_t *msg);
+ZMQ_EXPORT int zmq_msg_get (const zmq_msg_t *msg, int property);
 ZMQ_EXPORT int zmq_msg_set (zmq_msg_t *msg, int property, int optval);
-ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
+ZMQ_EXPORT const char *zmq_msg_gets (const zmq_msg_t *msg, const char *property);
 
 /******************************************************************************/
 /*  0MQ socket definition.                                                    */
@@ -296,7 +298,7 @@ ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
 
 /*  Socket options.                                                           */
 #define ZMQ_AFFINITY 4
-#define ZMQ_IDENTITY 5
+#define ZMQ_ROUTING_ID 5
 #define ZMQ_SUBSCRIBE 6
 #define ZMQ_UNSUBSCRIBE 7
 #define ZMQ_RATE 8
@@ -342,7 +344,7 @@ ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
 #define ZMQ_ZAP_DOMAIN 55
 #define ZMQ_ROUTER_HANDOVER 56
 #define ZMQ_TOS 57
-#define ZMQ_CONNECT_RID 61
+#define ZMQ_CONNECT_ROUTING_ID 61
 #define ZMQ_GSSAPI_SERVER 62
 #define ZMQ_GSSAPI_PRINCIPAL 63
 #define ZMQ_GSSAPI_SERVICE_PRINCIPAL 64
@@ -387,6 +389,8 @@ ZMQ_EXPORT const char *zmq_msg_gets (zmq_msg_t *msg, const char *property);
 #define ZMQ_GROUP_MAX_LENGTH        15
 
 /*  Deprecated options and aliases                                            */
+#define ZMQ_IDENTITY                ZMQ_ROUTING_ID
+#define ZMQ_CONNECT_RID             ZMQ_CONNECT_ROUTING_ID
 #define ZMQ_TCP_ACCEPT_FILTER       38
 #define ZMQ_IPC_FILTER_PID          58
 #define ZMQ_IPC_FILTER_UID          59
@@ -436,7 +440,7 @@ ZMQ_EXPORT int zmq_socket_monitor (void *s, const char *addr, int events);
 
 
 /******************************************************************************/
-/*  I/O multiplexing.                                                         */
+/*  Deprecated I/O multiplexing. Prefer using zmq_poller API                  */
 /******************************************************************************/
 
 #define ZMQ_POLLIN 1
@@ -561,12 +565,54 @@ ZMQ_EXPORT void zmq_threadclose (void* thread);
 #define ZMQ_SCATTER 17
 #define ZMQ_DGRAM 18
 
+/*  DRAFT Socket options.                                                     */
+#define ZMQ_GSSAPI_PRINCIPAL_NAMETYPE 90
+#define ZMQ_GSSAPI_SERVICE_PRINCIPAL_NAMETYPE 91
+#define ZMQ_BINDTODEVICE 92
+#define ZMQ_ZAP_ENFORCE_DOMAIN 93
+
 /*  DRAFT 0MQ socket events and monitoring                                    */
-#define ZMQ_EVENT_HANDSHAKE_FAILED  0x0800
-#define ZMQ_EVENT_HANDSHAKE_SUCCEED 0x1000
+/*  Unspecified system errors during handshake. Event value is an errno.      */
+#define ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL   0x0800
+/*  Handshake complete successfully with successful authentication (if        *
+ *  enabled). Event value is unused.                                          */
+#define ZMQ_EVENT_HANDSHAKE_SUCCEEDED          0x1000
+/*  Protocol errors between ZMTP peers or between server and ZAP handler.     *
+ *  Event value is one of ZMQ_PROTOCOL_ERROR_*                                */
+#define ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL    0x2000
+/*  Failed authentication requests. Event value is the numeric ZAP status     *
+ *  code, i.e. 300, 400 or 500.                                               */
+#define ZMQ_EVENT_HANDSHAKE_FAILED_AUTH        0x4000
+
+#define ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED 0x10000000
+#define ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND 0x10000001
+#define ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE 0x10000002
+#define ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE 0x10000003
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED 0x10000011
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE 0x10000012
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO 0x10000013
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE 0x10000014
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR 0x10000015
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY 0x10000016
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME 0x10000017
+#define ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA 0x10000018
+
+// the following two may be due to erroneous configuration of a peer
+#define ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC 0x11000001
+#define ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH 0x11000002
+
+#define ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED     0x20000000
+#define ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY 0x20000001
+#define ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID 0x20000002
+#define ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION 0x20000003
+#define ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE 0x20000004
+#define ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA 0x20000005
 
 /*  DRAFT Context options                                                     */
 #define ZMQ_MSG_T_SIZE 6
+#define ZMQ_THREAD_AFFINITY_CPU_ADD 7
+#define ZMQ_THREAD_AFFINITY_CPU_REMOVE 8
+#define ZMQ_THREAD_NAME_PREFIX 9
 
 /*  DRAFT Socket methods.                                                     */
 ZMQ_EXPORT int zmq_join (void *s, const char *group);
@@ -577,6 +623,12 @@ ZMQ_EXPORT int zmq_msg_set_routing_id(zmq_msg_t *msg, uint32_t routing_id);
 ZMQ_EXPORT uint32_t zmq_msg_routing_id(zmq_msg_t *msg);
 ZMQ_EXPORT int zmq_msg_set_group(zmq_msg_t *msg, const char *group);
 ZMQ_EXPORT const char *zmq_msg_group(zmq_msg_t *msg);
+
+/*  DRAFT Msg property names.                                                 */
+#define ZMQ_MSG_PROPERTY_ROUTING_ID    "Routing-Id"
+#define ZMQ_MSG_PROPERTY_SOCKET_TYPE   "Socket-Type"
+#define ZMQ_MSG_PROPERTY_USER_ID       "User-Id"
+#define ZMQ_MSG_PROPERTY_PEER_ADDRESS  "Peer-Address"
 
 /******************************************************************************/
 /*  Poller polling on sockets,fd and thread-safe sockets                      */
@@ -614,6 +666,10 @@ ZMQ_EXPORT int zmq_poller_modify_fd (void *poller, int fd, short events);
 ZMQ_EXPORT int zmq_poller_remove_fd (void *poller, int fd);
 #endif
 
+ZMQ_EXPORT int zmq_socket_get_peer_state (void *socket,
+                                          const void *routing_id,
+                                          size_t routing_id_size);
+
 /******************************************************************************/
 /*  Scheduling timers                                                         */
 /******************************************************************************/
@@ -630,6 +686,15 @@ ZMQ_EXPORT int   zmq_timers_set_interval (void *timers, int timer_id, size_t int
 ZMQ_EXPORT int   zmq_timers_reset (void *timers, int timer_id);
 ZMQ_EXPORT long  zmq_timers_timeout (void *timers);
 ZMQ_EXPORT int   zmq_timers_execute (void *timers);
+
+/******************************************************************************/
+/*  GSSAPI definitions                                                        */
+/******************************************************************************/
+
+/*  GSSAPI principal name types                                               */
+#define ZMQ_GSSAPI_NT_HOSTBASED 0
+#define ZMQ_GSSAPI_NT_USER_NAME 1
+#define ZMQ_GSSAPI_NT_KRB5_PRINCIPAL 2
 
 #endif // ZMQ_BUILD_DRAFT_API
 

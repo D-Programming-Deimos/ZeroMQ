@@ -46,7 +46,7 @@ enum
 {
     ZMQ_VERSION_MAJOR   = 4,
     ZMQ_VERSION_MINOR   = 2,
-    ZMQ_VERSION_PATCH   = 2
+    ZMQ_VERSION_PATCH   = 3
 }
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
@@ -164,11 +164,11 @@ int zmq_msg_close(zmq_msg_t* msg);
 int zmq_msg_move(zmq_msg_t* dest, zmq_msg_t* src);
 int zmq_msg_copy(zmq_msg_t* dest, zmq_msg_t* src);
 void* zmq_msg_data(zmq_msg_t* msg);
-size_t zmq_msg_size(zmq_msg_t* msg);
-int zmq_msg_more(zmq_msg_t* msg);
-int zmq_msg_get(zmq_msg_t* msg, int property);
+size_t zmq_msg_size(const(zmq_msg_t)* msg);
+int zmq_msg_more(const(zmq_msg_t)* msg);
+int zmq_msg_get(const(zmq_msg_t)* msg, int property);
 int zmq_msg_set(zmq_msg_t* msg, int property, int optval);
-const(char)* zmq_msg_gets(zmq_msg_t* msg, const(char)* property);
+const(char)* zmq_msg_gets(const(zmq_msg_t)* msg, const(char)* property);
 
 /******************************************************************************/
 /*  0MQ socket definition.                                                    */
@@ -202,7 +202,7 @@ enum
 enum
 {
     ZMQ_AFFINITY        = 4,
-    ZMQ_IDENTITY        = 5,
+    ZMQ_ROUTING_ID      = 5,
     ZMQ_SUBSCRIBE       = 6,
     ZMQ_UNSUBSCRIBE     = 7,
     ZMQ_RATE            = 8,
@@ -248,7 +248,7 @@ enum
     ZMQ_ZAP_DOMAIN              = 55,
     ZMQ_ROUTER_HANDOVER         = 56,
     ZMQ_TOS                     = 57,
-    ZMQ_CONNECT_RID             = 61,
+    ZMQ_CONNECT_ROUTING_ID      = 61,
     ZMQ_GSSAPI_SERVER           = 62,
     ZMQ_GSSAPI_PRINCIPAL        = 63,
     ZMQ_GSSAPI_SERVICE_PRINCIPAL= 64,
@@ -309,6 +309,8 @@ enum
 /*  Deprecated options and aliases                                            */
 enum
 {
+    ZMQ_IDENTITY                = ZMQ_ROUTING_ID,
+    ZMQ_CONNECT_RID             = ZMQ_CONNECT_ROUTING_ID,
     ZMQ_TCP_ACCEPT_FILTER       = 38,
     ZMQ_IPC_FILTER_PID          = 58,
     ZMQ_IPC_FILTER_UID          = 59,
@@ -369,7 +371,7 @@ int zmq_socket_monitor(void* s, const char* addr, int events);
 
 
 /******************************************************************************/
-/*  I/O multiplexing.                                                         */
+/*  Deprecated I/O multiplexing. Prefer using zmq_poller API                  */
 /******************************************************************************/
 
 enum
@@ -502,18 +504,55 @@ enum
     ZMQ_DGRAM   = 18,
 }
 
+/*  DRAFT Socket options.                                                     */
+enum ZMQ_GSSAPI_PRINCIPAL_NAMETYPE = 90;
+enum ZMQ_GSSAPI_SERVICE_PRINCIPAL_NAMETYPE = 91;
+enum ZMQ_BINDTODEVICE = 92;
+enum ZMQ_ZAP_ENFORCE_DOMAIN = 93;
+
+
 /*  DRAFT 0MQ socket events and monitoring                                    */
-enum
-{
-    ZMQ_EVENT_HANDSHAKE_FAILED  = 0x0800,
-    ZMQ_EVENT_HANDSHAKE_SUCCEED = 0x1000,
-}
+/*  Unspecified system errors during handshake. Event value is an errno.      */
+enum ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL = 0x0800;
+/*  Handshake complete successfully with successful authentication (if        *
+ *  enabled). Event value is unused.                                          */
+enum ZMQ_EVENT_HANDSHAKE_SUCCEEDED = 0x1000;
+/*  Protocol errors between ZMTP peers or between server and ZAP handler.     *
+ *  Event value is one of ZMQ_PROTOCOL_ERROR_*                                */
+enum ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL = 0x2000;
+/*  Failed authentication requests. Event value is the numeric ZAP status     *
+ *  code, i.e. 300, 400 or 500.                                               */
+enum ZMQ_EVENT_HANDSHAKE_FAILED_AUTH = 0x4000;
+
+enum ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED = 0x10000000;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND = 0x10000001;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE = 0x10000002;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE = 0x10000003;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED = 0x10000011;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE = 0x10000012;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO = 0x10000013;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE = 0x10000014;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR = 0x10000015;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY = 0x10000016;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME = 0x10000017;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA = 0x10000018;
+
+// the following two may be due to erroneous configuration of a peer
+enum ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC = 0x11000001;
+enum ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH = 0x11000002;
+
+enum ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED = 0x20000000;
+enum ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY = 0x20000001;
+enum ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID = 0x20000002;
+enum ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION = 0x20000003;
+enum ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE = 0x20000004;
+enum ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA = 0x20000005;
 
 /*  DRAFT Context options                                                     */
-enum
-{
-    ZMQ_MSG_T_SIZE = 6,
-}
+enum ZMQ_MSG_T_SIZE = 6;
+enum ZMQ_THREAD_AFFINITY_CPU_ADD = 7;
+enum ZMQ_THREAD_AFFINITY_CPU_REMOVE = 8;
+enum ZMQ_THREAD_NAME_PREFIX = 9;
 
 /*  DRAFT Socket methods.                                                     */
 int zmq_join(void* s, const(char)* group);
@@ -524,6 +563,12 @@ int zmq_msg_set_routing_id(zmq_msg_t* msg, uint routing_id);
 uint zmq_msg_routing_id(zmq_msg_t* msg);
 int zmq_msg_set_group(zmq_msg_t* msg, const(char)* group);
 const(char)* zmq_msg_group(zmq_msg_t* msg);
+
+/*  DRAFT Msg property names.                                                 */
+enum ZMQ_MSG_PROPERTY_ROUTING_ID    = "Routing-Id";
+enum ZMQ_MSG_PROPERTY_SOCKET_TYPE   = "Socket-Type";
+enum ZMQ_MSG_PROPERTY_USER_ID       = "User-Id";
+enum ZMQ_MSG_PROPERTY_PEER_ADDRESS  = "Peer-Address";
 
 /******************************************************************************/
 /*  Poller polling on sockets,fd, and thread-safe sockets                     */
@@ -565,6 +610,10 @@ else
     int zmq_poller_remove_fd(void* poller, int fd);
 }
 
+int zmq_socket_get_peer_state(void* socket,
+                              const(void)* routing_id,
+                              size_t routing_id_size);
+
 /******************************************************************************/
 /*  Scheduling timers                                                         */
 /******************************************************************************/
@@ -579,6 +628,15 @@ int    zmq_timers_set_interval(void* timers, int timer_id, size_t interval);
 int    zmq_timers_reset(void* timers, int timer_id);
 c_long zmq_timers_timeout(void* timers);
 int    zmq_timers_execute(void* timers);
+
+/******************************************************************************/
+/*  GSSAPI definitions                                                        */
+/******************************************************************************/
+
+/*  GSSAPI principal name types                                               */
+enum ZMQ_GSSAPI_NT_HOSTBASED  = 0;
+enum ZMQ_GSSAPI_NT_USER_NAME  = 1;
+enum ZMQ_GSSAPI_NT_KRB5_PRINCIPAL  = 2;
 
 } // version(ZMQ_BUILD_DRAFT_API)
 
