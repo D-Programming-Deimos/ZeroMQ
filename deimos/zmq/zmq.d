@@ -42,12 +42,9 @@ nothrow extern (C)
 {
 
 /*  Version macros for compile-time API version detection                     */
-enum
-{
-    ZMQ_VERSION_MAJOR   = 4,
-    ZMQ_VERSION_MINOR   = 2,
-    ZMQ_VERSION_PATCH   = 3
-}
+enum ZMQ_VERSION_MAJOR = 4;
+enum ZMQ_VERSION_MINOR = 2;
+enum ZMQ_VERSION_PATCH = 4;
 
 int ZMQ_MAKE_VERSION(int major, int minor, int patch)
 {
@@ -112,7 +109,7 @@ void zmq_version (int *major, int *minor, int *patch);
 /*  Context options                                                           */
 enum
 {
-    ZMQ_IO_THREADS  = 1,
+    ZMQ_IO_THREADS = 1,
     ZMQ_MAX_SOCKETS = 2,
     ZMQ_SOCKET_LIMIT = 3,
     ZMQ_THREAD_PRIORITY = 3,
@@ -123,7 +120,7 @@ enum
 /*  Default for new contexts                                                  */
 enum
 {
-    ZMQ_IO_THREADS_DFLT  = 1,
+    ZMQ_IO_THREADS_DFLT = 1,
     ZMQ_MAX_SOCKETS_DFLT = 1023,
     ZMQ_THREAD_PRIORITY_DFLT = -1,
     ZMQ_THREAD_SCHED_POLICY_DFLT = -1,
@@ -156,8 +153,8 @@ struct zmq_msg_t
 
 int zmq_msg_init(zmq_msg_t* msg);
 int zmq_msg_init_size(zmq_msg_t* msg, size_t size);
-int zmq_msg_init_data(zmq_msg_t* msg, void* data, size_t size,
-    void function(void* data, void* hint) nothrow ffn, void* hint);
+int zmq_msg_init_data(
+    zmq_msg_t* msg, void* data, size_t size, void function(void* data, void* hint) nothrow ffn, void* hint);
 int zmq_msg_send(zmq_msg_t* msg, void* s, int flags);
 int zmq_msg_recv(zmq_msg_t* msg, void* s, int flags);
 int zmq_msg_close(zmq_msg_t* msg);
@@ -168,7 +165,8 @@ size_t zmq_msg_size(const(zmq_msg_t)* msg);
 int zmq_msg_more(const(zmq_msg_t)* msg);
 int zmq_msg_get(const(zmq_msg_t)* msg, int property);
 int zmq_msg_set(zmq_msg_t* msg, int property, int optval);
-const(char)* zmq_msg_gets(const(zmq_msg_t)* msg, const(char)* property);
+const(char)* zmq_msg_gets(const(zmq_msg_t)* msg,
+                          const(char)* property);
 
 /******************************************************************************/
 /*  0MQ socket definition.                                                    */
@@ -301,32 +299,23 @@ enum
 }
 
 /*  RADIO_DISH protocol                                                       */
-enum
-{
-    ZMQ_GROUP_MAX_LENGTH = 15,
-}
+enum ZMQ_GROUP_MAX_LENGTH = 15;
 
 /*  Deprecated options and aliases                                            */
-enum
-{
-    ZMQ_IDENTITY                = ZMQ_ROUTING_ID,
-    ZMQ_CONNECT_RID             = ZMQ_CONNECT_ROUTING_ID,
-    ZMQ_TCP_ACCEPT_FILTER       = 38,
-    ZMQ_IPC_FILTER_PID          = 58,
-    ZMQ_IPC_FILTER_UID          = 59,
-    ZMQ_IPC_FILTER_GID          = 60,
-    ZMQ_IPV4ONLY                = 31,
-    ZMQ_DELAY_ATTACH_ON_CONNECT = ZMQ_IMMEDIATE,
-    ZMQ_NOBLOCK                 = ZMQ_DONTWAIT,
-    ZMQ_FAIL_UNROUTABLE         = ZMQ_ROUTER_MANDATORY,
-    ZMQ_ROUTER_BEHAVIOR         = ZMQ_ROUTER_MANDATORY,
-}
+enum ZMQ_IDENTITY = ZMQ_ROUTING_ID;
+enum ZMQ_CONNECT_RID = ZMQ_CONNECT_ROUTING_ID;
+enum ZMQ_TCP_ACCEPT_FILTER = 38;
+enum ZMQ_IPC_FILTER_PID = 58;
+enum ZMQ_IPC_FILTER_UID = 59;
+enum ZMQ_IPC_FILTER_GID = 60;
+enum ZMQ_IPV4ONLY = 31;
+enum ZMQ_DELAY_ATTACH_ON_CONNECT = ZMQ_IMMEDIATE;
+enum ZMQ_NOBLOCK = ZMQ_DONTWAIT;
+enum ZMQ_FAIL_UNROUTABLE = ZMQ_ROUTER_MANDATORY;
+enum ZMQ_ROUTER_BEHAVIOR = ZMQ_ROUTER_MANDATORY;
 
 /* Deprecated Message options                                                 */
-enum
-{
-    ZMQ_SRCFD = 2,
-}
+enum ZMQ_SRCFD = 2;
 
 /******************************************************************************/
 /*  0MQ socket events and monitoring                                          */
@@ -334,22 +323,18 @@ enum
 
 /*  Socket transport events (TCP, IPC, and TIPC only)                                */
 
-enum
-{
-    ZMQ_EVENT_CONNECTED          = 0x0001,
-    ZMQ_EVENT_CONNECT_DELAYED    = 0x0002,
-    ZMQ_EVENT_CONNECT_RETRIED    = 0x0004,
-    ZMQ_EVENT_LISTENING          = 0x0008,
-    ZMQ_EVENT_BIND_FAILED        = 0x0010,
-    ZMQ_EVENT_ACCEPTED           = 0x0020,
-    ZMQ_EVENT_ACCEPT_FAILED      = 0x0040,
-    ZMQ_EVENT_CLOSED             = 0x0080,
-    ZMQ_EVENT_CLOSE_FAILED       = 0x0100,
-    ZMQ_EVENT_DISCONNECTED       = 0x0200,
-    ZMQ_EVENT_MONITOR_STOPPED    = 0x0400,
-    ZMQ_EVENT_ALL                = 0xFFFF,
-}
-
+enum ZMQ_EVENT_CONNECTED = 0x0001;
+enum ZMQ_EVENT_CONNECT_DELAYED = 0x0002;
+enum ZMQ_EVENT_CONNECT_RETRIED = 0x0004;
+enum ZMQ_EVENT_LISTENING = 0x0008;
+enum ZMQ_EVENT_BIND_FAILED = 0x0010;
+enum ZMQ_EVENT_ACCEPTED = 0x0020;
+enum ZMQ_EVENT_ACCEPT_FAILED = 0x0040;
+enum ZMQ_EVENT_CLOSED = 0x0080;
+enum ZMQ_EVENT_CLOSE_FAILED = 0x0100;
+enum ZMQ_EVENT_DISCONNECTED = 0x0200;
+enum ZMQ_EVENT_MONITOR_STOPPED = 0x0400;
+enum ZMQ_EVENT_ALL = 0xFFFF;
 
 void* zmq_socket(void*, int type);
 int zmq_close(void* s);
@@ -402,7 +387,10 @@ int zmq_poll(zmq_pollitem_t* items, int nitems, c_long timeout);
 /******************************************************************************/
 
 int zmq_proxy(void* frontend, void* backend, void* capture);
-int zmq_proxy_steerable (void *frontend, void *backend, void *capture, void *control);
+int zmq_proxy_steerable(void* frontend,
+                        void* backend,
+                        void* capture,
+                        void* control);
 
 /******************************************************************************/
 /*  Probe library capabilities                                                */
@@ -443,7 +431,8 @@ int zmq_curve_keypair(char* z85_public_key, char* z85_secret_key);
 
 /*  Derive the z85-encoded public key from the z85-encoded secret key.        */
 /*  Returns 0 on success.                                                     */
-int zmq_curve_public(char* z85_public_key, const(char)* z85_secret_key);
+int zmq_curve_public(char* z85_public_key,
+                     const(char)* z85_secret_key);
 
 /******************************************************************************/
 /*  Atomic utility methods                                                    */
@@ -467,8 +456,15 @@ void zmq_atomic_counter_destroy(void** counter_p);
 /*  Starts the stopwatch. Returns the handle to the watch.                    */
 void* zmq_stopwatch_start();
 
+version (ZMQ_BUILD_DRAFT_API)
+{
+/*  Returns the number of microseconds elapsed since the stopwatch was        */
+/*  started, but does not stop or deallocate the stopwatch.                   */
+c_ulong zmq_stopwatch_intermediate(void* watch_);
+}
+
 /*  Stops the stopwatch. Returns the number of microseconds elapsed since     */
-/*  the stopwatch was started.                                                */
+/*  the stopwatch was started, and deallocates that watch.                    */
 c_ulong zmq_stopwatch_stop(void* watch_);
 
 /*  Sleeps for specified number of seconds.                                   */
@@ -504,6 +500,8 @@ enum ZMQ_GSSAPI_PRINCIPAL_NAMETYPE = 90;
 enum ZMQ_GSSAPI_SERVICE_PRINCIPAL_NAMETYPE = 91;
 enum ZMQ_BINDTODEVICE = 92;
 enum ZMQ_ZAP_ENFORCE_DOMAIN = 93;
+enum ZMQ_LOOPBACK_FASTPATH = 94;
+enum ZMQ_METADATA = 95;
 
 
 /*  DRAFT 0MQ socket events and monitoring                                    */
@@ -548,6 +546,7 @@ enum ZMQ_MSG_T_SIZE = 6;
 enum ZMQ_THREAD_AFFINITY_CPU_ADD = 7;
 enum ZMQ_THREAD_AFFINITY_CPU_REMOVE = 8;
 enum ZMQ_THREAD_NAME_PREFIX = 9;
+enum ZMQ_ZERO_COPY_RECV = 10;
 
 /*  DRAFT Socket methods.                                                     */
 int zmq_join(void* s, const(char)* group);
@@ -560,10 +559,10 @@ int zmq_msg_set_group(zmq_msg_t* msg, const(char)* group);
 const(char)* zmq_msg_group(zmq_msg_t* msg);
 
 /*  DRAFT Msg property names.                                                 */
-enum ZMQ_MSG_PROPERTY_ROUTING_ID    = "Routing-Id";
-enum ZMQ_MSG_PROPERTY_SOCKET_TYPE   = "Socket-Type";
-enum ZMQ_MSG_PROPERTY_USER_ID       = "User-Id";
-enum ZMQ_MSG_PROPERTY_PEER_ADDRESS  = "Peer-Address";
+enum ZMQ_MSG_PROPERTY_ROUTING_ID = "Routing-Id";
+enum ZMQ_MSG_PROPERTY_SOCKET_TYPE = "Socket-Type";
+enum ZMQ_MSG_PROPERTY_USER_ID = "User-Id";
+enum ZMQ_MSG_PROPERTY_PEER_ADDRESS = "Peer-Address";
 
 /******************************************************************************/
 /*  Poller polling on sockets,fd, and thread-safe sockets                     */
@@ -585,12 +584,15 @@ struct zmq_poller_event_t
 }
 
 void* zmq_poller_new();
-int  zmq_poller_destroy(void** poller_p);
-int  zmq_poller_add(void* poller, void* socket, void* user_data, short events);
-int  zmq_poller_modify(void* poller, void* socket, short events);
-int  zmq_poller_remove(void* poller, void* socket);
-int  zmq_poller_wait(void* poller, zmq_poller_event_t* event, c_long timeout);
-int  zmq_poller_wait_all(void* poller, zmq_poller_event_t* events, int n_events, c_long timout);
+int zmq_poller_destroy(void** poller_p);
+int zmq_poller_add(void* poller, void* socket, void* user_data, short events);
+int zmq_poller_modify(void* poller, void* socket, short events);
+int zmq_poller_remove(void* poller, void* socket);
+int zmq_poller_wait(void* poller, zmq_poller_event_t* event, c_long timeout);
+int zmq_poller_wait_all(void* poller,
+                        zmq_poller_event_t* events,
+                        int n_events,
+                        c_long timout);
 
 version (Windows)
 {
@@ -615,14 +617,14 @@ int zmq_socket_get_peer_state(void* socket,
 
 alias zmq_timer_fn = void function(int timer_id, void* arg);
 
-void*  zmq_timers_new();
-int    zmq_timers_destroy(void** timers_p);
-int    zmq_timers_add(void* timers, size_t interval, zmq_timer_fn handler, void* arg);
-int    zmq_timers_cancel(void* timers, int timer_id);
-int    zmq_timers_set_interval(void* timers, int timer_id, size_t interval);
-int    zmq_timers_reset(void* timers, int timer_id);
+void* zmq_timers_new();
+int zmq_timers_destroy(void** timers_p);
+int zmq_timers_add(void* timers, size_t interval, zmq_timer_fn handler, void* arg);
+int zmq_timers_cancel(void* timers, int timer_id);
+int zmq_timers_set_interval(void* timers, int timer_id, size_t interval);
+int zmq_timers_reset(void* timers, int timer_id);
 c_long zmq_timers_timeout(void* timers);
-int    zmq_timers_execute(void* timers);
+int zmq_timers_execute(void* timers);
 
 /******************************************************************************/
 /*  GSSAPI definitions                                                        */
