@@ -29,8 +29,15 @@ bindings version 5.0.0, corresponding to ZeroMQ version 4.2.2.
 Up to and including v4.2.2, the bindings versions corresponded exactly to
 upstream ZeroMQ versions.
 
+Authors
+-------
+These bindings were originally based on code by [itiu].  For the full
+list of contributors, see the [Contributors] page on GitHub.
+
 [ZeroMQ]: http://zeromq.org
 [Deimos]: https://github.com/D-Programming-Deimos
 [Deimos team]: https://github.com/orgs/D-Programming-Deimos/people
 [zmqd]: https://github.com/kyllingstad/zmqd
 [Semantic Versioning]: https://semver.org
+[itiu]: https://github.com/itiu
+[Contributors]: https://github.com/D-Programming-Deimos/ZeroMQ/graphs/contributors
