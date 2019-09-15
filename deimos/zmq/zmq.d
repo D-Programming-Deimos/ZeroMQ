@@ -350,11 +350,6 @@ enum
     ZMQ_EVENT_ALL                = 0xFFFF,
 }
 
-/*  Socket event data  */
-struct zmq_event_t {
-    ushort event;   // id of the event as bitfield
-    int value;      // value is either error code, fd or reconnect interval
-}
 
 void* zmq_socket(void*, int type);
 int zmq_close(void* s);
